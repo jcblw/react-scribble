@@ -1,0 +1,30 @@
+{
+  "name": "react-sketchbook",
+  "version": "0.0.1",
+  "description": "A ways to infuse your react components with canvas elements, and draw to canvas from a component.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "repository": "https://github.com/jcblw/react-sketchbook",
+  "author": "Jacob Lowe",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "tsc"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@mujo/eslint-config": "^1.1.0",
+    "@types/react": "^16.9.38",
+    "csstype": "^2.6.10",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "tslib": "^2.0.0",
+    "typescript": "^3.9.5"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "example-blob",
+  "version": "1.0.0",
+  "description": "Example of how to use react scribble",
+  "main": "index.js",
+  "author": "Jacob Lowe",
+  "license": "MIT",
+  "scripts": {
+    "start": "parcel index.html"
+  },
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scribble": "*",
+    "simplex-noise": "^2.4.0"
+  },
+  "devDependencies": {
+    "parcel": "^1.12.4"
+  }
+}
