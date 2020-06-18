@@ -1,5 +1,5 @@
 {
-  "name": "react-sketchbook",
+  "name": "react-scribble",
   "version": "0.0.1",
   "description": "A ways to infuse your react components with canvas elements, and draw to canvas from a component.",
   "main": "dist/index.js",
@@ -7,7 +7,7 @@
   "files": [
     "dist/**/*"
   ],
-  "repository": "https://github.com/jcblw/react-sketchbook",
+  "repository": "https://github.com/jcblw/react-scribble",
   "author": "Jacob Lowe",
   "license": "MIT",
   "private": false,
