@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from '../../../node_modules/react'
 import { useDraw } from '../../../dist'
-import { AnimatedValue } from './animated-value'
 import SimplexNoise from 'simplex-noise'
 import {
   getPointOnCircle,
@@ -10,19 +9,8 @@ import {
   angleToRadian,
 } from './math'
 
-const getValue = x => {
-  let value
-  try {
-    value = x.getAnimatedValue()
-  } catch (e) {
-    value = x
-  }
-  return value
-}
-
 export const drawBlob = ({
   scale,
-  i,
   x,
   y,
   lr,
@@ -34,19 +22,20 @@ export const drawBlob = ({
   noisePoint,
   angles,
   animated,
+  meta,
 }) => {
   const arr = []
-  const center = [getValue(x), getValue(y)]
+  const center = [x, y]
   const noiseCenter = getPointOnCircle(
     ...noisePoint,
-    angleToRadian(getValue(i)),
+    angleToRadian(meta.current),
     10
   )
   for (let angle = 0; angle <= Math.PI * 2; angle += Math.PI / angles) {
     const perlinPoint = getPointOnCircle(...noiseCenter, angle, 0.5)
     const off = normalize(simplex.noise2D(...perlinPoint), 0, 1, lr, ur)
 
-    const radi = radius * getValue(scale) + off
+    const radi = radius * scale + off
     const px = radi * Math.cos(angle) + center[0]
     const py = radi * Math.sin(angle) + center[1]
     arr.push([px, py])
@@ -66,7 +55,7 @@ export const drawBlob = ({
 
   let started = false
   ctx.beginPath()
-  ctx.fillStyle = getValue(color)
+  ctx.fillStyle = color
   newArr.forEach(([px, py], ii) => {
     if (started) {
       ctx.lineTo(px, py)
@@ -79,7 +68,7 @@ export const drawBlob = ({
   ctx.fill()
 
   if (animated) {
-    i.setValue(getValue(i) + 0.01)
+    meta.current += 0.01
   }
 }
 
@@ -99,11 +88,9 @@ export const Blob = ({
   simplex = new SimplexNoise(),
 }) => {
   const noisePoint = useMemo(() => [rando(), rando()], [])
-  const i = useMemo(() => new AnimatedValue(0), [])
   const draw = useCallback(
-    ctx => {
+    (ctx, canvas, meta) => {
       drawBlob({
-        i,
         scale,
         x,
         x2,
@@ -117,13 +104,13 @@ export const Blob = ({
         animated,
         noisePoint,
         angles,
+        meta,
       })
     },
     [
       angles,
       animated,
       color,
-      i,
       lr,
       noisePoint,
       radius,

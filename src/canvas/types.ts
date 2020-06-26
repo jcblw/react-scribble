@@ -1,25 +1,28 @@
 import CSS from 'csstype'
 
-export type DrawFN = (
+export type DrawFN<T> = (
   ctx: CanvasRenderingContext2D,
-  canvas: HTMLCanvasElement
+  canvas: HTMLCanvasElement,
+  meta?: T
 ) => void
 
-export interface ScribbleContext {
-  drawFns: DrawFN[]
+export interface ScribbleContext<T extends {}> {
+  drawFns: DrawFN<T>[]
   canvas: null | HTMLCanvasElement
   width: number
   height: number
+  meta?: T
 }
 
-export interface CanvasProps {
+export interface CanvasProps<T> {
   width: number
   height: number
-  onSetup?: DrawFN
+  onSetup?: DrawFN<T>
   loop?: boolean
-  onDraw?: DrawFN
+  onDraw?: DrawFN<T>
   style?: CSS.Properties
   className?: string
+  meta?: T
 }
 
 export interface Time {
@@ -27,12 +30,13 @@ export interface Time {
   timeout?: number
 }
 
-export interface DrawParams {
-  onDraw?: DrawFN
-  drawFns: DrawFN[]
+export interface DrawParams<T> {
+  onDraw?: DrawFN<T>
+  drawFns: DrawFN<T>[]
   ctx: CanvasRenderingContext2D
   canvas: HTMLCanvasElement
   updateTime: (time: Time) => void
+  meta?: T
 }
 
-export type DrawLoopFN = (params: DrawParams) => void
+export type DrawLoopFN<T> = (params: DrawParams<T>) => void
