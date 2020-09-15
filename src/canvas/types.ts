@@ -7,7 +7,7 @@ export type DrawFN<T> = (
 ) => void
 
 export interface ScribbleContext<T extends {}> {
-  drawFns: DrawFN<T>[]
+  drawFns: (DrawFN<T> | null)[]
   canvas: null | HTMLCanvasElement
   width: number
   height: number
@@ -33,7 +33,7 @@ export interface Time {
 
 export interface DrawParams<T> {
   onDraw?: DrawFN<T>
-  drawFns: DrawFN<T>[]
+  drawFns: (DrawFN<T> | null)[]
   ctx: CanvasRenderingContext2D
   canvas: HTMLCanvasElement
   updateTime: (time: Time) => void

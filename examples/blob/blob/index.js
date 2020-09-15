@@ -73,6 +73,7 @@ export const drawBlob = ({
 }
 
 const rando = () => Math.floor(Math.random() * 100)
+const initialSimplex = new SimplexNoise()
 
 export const Blob = ({
   scale = 1,
@@ -85,7 +86,7 @@ export const Blob = ({
   radius = 100,
   animated = true,
   angles = 50,
-  simplex = new SimplexNoise(),
+  simplex = initialSimplex,
 }) => {
   const noisePoint = useMemo(() => [rando(), rando()], [])
   const draw = useCallback(

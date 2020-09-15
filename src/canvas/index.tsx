@@ -4,6 +4,7 @@ import React, {
   createContext,
   useMemo,
   useContext,
+  useState,
 } from 'react'
 import { DrawFN, ScribbleContext, DrawLoopFN, CanvasProps } from './types'
 
@@ -21,14 +22,20 @@ export const makeCanvas = <T extends {}>() => {
 
   const useDraw = (fn: DrawFN<T>) => {
     const { drawFns } = useContext(context)
+    const [index, setIndex] = useState<number>()
     useEffect(() => {
       const x = fn
-      drawFns.push(fn)
-      return () => {
-        const index = drawFns.indexOf(x)
-        drawFns.splice(index, 1)
+      if (typeof index !== 'undefined') {
+        drawFns.splice(index, 1, x)
+      } else {
+        drawFns.push(fn)
       }
-    }, [fn]) // eslint-disable-next-line
+      const currentIndex = drawFns.indexOf(x)
+      setIndex(currentIndex)
+      return () => {
+        drawFns.splice(currentIndex, 1, null)
+      }
+    }, [fn, index])
   }
 
   const useScribbleContext = () => {
@@ -55,6 +62,7 @@ export const makeCanvas = <T extends {}>() => {
         ctx.translate(0.5, 0.5)
         onDraw(ctx, canvas, meta)
         drawFns.forEach(drawFn => {
+          if (drawFn === null) return
           drawFn(ctx, canvas, meta)
         })
       } catch (e) {
@@ -94,7 +102,7 @@ export const makeCanvas = <T extends {}>() => {
     fps = 120,
   }) => {
     const ref = useRef<HTMLCanvasElement>(null)
-    const drawFns = useMemo(() => [], [])
+    const drawFns = useMemo<(DrawFN<T> | null)[]>(() => [], [])
     useEffect(() => {
       let t = 0
       let r = 0

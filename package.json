@@ -10,7 +10,6 @@
   ],
   "repository": "https://github.com/jcblw/react-scribble",
   "author": "Jacob Lowe",
-  "license": "MIT",
   "private": false,
   "scripts": {
     "build": "tsc"
@@ -27,5 +26,27 @@
     "react-dom": "^16.13.1",
     "tslib": "^2.0.0",
     "typescript": "^3.9.5"
+  },
+  "eslineConfig": {
+    "extends": "@mujo",
+    "rules": {
+      "@typescript-eslint/no-angle-bracket-type-assertion": "off",
+      "import/no-extraneous-dependencies": "off",
+      "guard-for-in": "off",
+      "prefer-spread": "off",
+      "no-undef": "off"
+    },
+    "settings": {
+      "import/resolver": {
+        "node": {
+          "extensions": [
+            ".js",
+            ".jsx",
+            ".ts",
+            ".tsx"
+          ]
+        }
+      }
+    }
   }
 }
