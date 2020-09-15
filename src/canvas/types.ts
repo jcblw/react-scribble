@@ -23,6 +23,7 @@ export interface CanvasProps<T> {
   style?: CSS.Properties
   className?: string
   meta?: T
+  fps?: number
 }
 
 export interface Time {
@@ -37,6 +38,8 @@ export interface DrawParams<T> {
   canvas: HTMLCanvasElement
   updateTime: (time: Time) => void
   meta?: T
+  fps: number
+  lastUpdate: number
 }
 
 export type DrawLoopFN<T> = (params: DrawParams<T>) => void

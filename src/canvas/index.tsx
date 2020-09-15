@@ -42,18 +42,26 @@ export const makeCanvas = <T extends {}>() => {
     canvas,
     updateTime,
     meta,
+    fps,
+    lastUpdate,
   }) => {
-    try {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.translate(0.5, 0.5)
-      onDraw(ctx, canvas, meta)
-      drawFns.forEach(drawFn => {
-        drawFn(ctx, canvas, meta)
-      })
-    } catch (e) {
-      console.error(e)
-    } finally {
-      ctx.translate(-0.5, -0.5)
+    let updatedLastUpdate = lastUpdate
+    const now = +new Date()
+    const shouldUpdate = fps >= 1000 / (now - lastUpdate)
+    if (shouldUpdate) {
+      updatedLastUpdate = now
+      try {
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.translate(0.5, 0.5)
+        onDraw(ctx, canvas, meta)
+        drawFns.forEach(drawFn => {
+          drawFn(ctx, canvas, meta)
+        })
+      } catch (e) {
+        console.error(e)
+      } finally {
+        ctx.translate(-0.5, -0.5)
+      }
     }
     const timeout = setTimeout(() => {
       const raf = requestAnimationFrame(() =>
@@ -64,6 +72,8 @@ export const makeCanvas = <T extends {}>() => {
           updateTime,
           canvas,
           meta,
+          lastUpdate: updatedLastUpdate,
+          fps,
         })
       )
       updateTime({ raf })
@@ -81,6 +91,7 @@ export const makeCanvas = <T extends {}>() => {
     style,
     className,
     meta,
+    fps = 120,
   }) => {
     const ref = useRef<HTMLCanvasElement>(null)
     const drawFns = useMemo(() => [], [])
@@ -106,6 +117,8 @@ export const makeCanvas = <T extends {}>() => {
                 r = raf
               }
             },
+            fps,
+            lastUpdate: +new Date(),
           })
         }
       }

@@ -11,6 +11,7 @@ const App = () => {
       height={window.innerHeight}
       loop
       meta={ref}
+      fps={30}
     >
       <Blob x={window.innerWidth / 2} y={window.innerHeight / 2} />
       <Stage style={{ justifyContent: 'center', alignItems: 'center' }}>
