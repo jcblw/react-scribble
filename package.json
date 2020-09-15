@@ -1,6 +1,6 @@
 {
   "name": "react-scribble",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "description": "A ways to infuse your react components with canvas elements, and draw to canvas from a component.",
   "main": "dist/index.js",
