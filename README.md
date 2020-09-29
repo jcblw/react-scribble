@@ -2,7 +2,7 @@
 
 React scribble is a react component that allows you to draw to canvas using hooks. This means that you can write individual component to draw a canvas in a declarative way.
 
-[Site](https://react-scribble-burq2p2sp.vercel.app/)
+[Site](https://react-scribble.jcblw.vercel.app)
 
 ![example of scribble](./assets/example.gif)
 
