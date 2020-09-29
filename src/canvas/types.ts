@@ -1,29 +1,29 @@
 import CSS from 'csstype'
+import React from 'react'
 
-export type DrawFN<T> = (
-  ctx: CanvasRenderingContext2D,
-  canvas: HTMLCanvasElement,
-  meta?: T
-) => void
+export type DrawFN<T, R> = (ctx: R, canvas: HTMLCanvasElement, meta?: T) => void
 
-export interface ScribbleContext<T extends {}> {
-  drawFns: (DrawFN<T> | null)[]
+export type CanvasContextId = '2d' | 'webgl' | 'webgl2' | string
+
+export interface ScribbleContext<T, R> {
   canvas: null | HTMLCanvasElement
   width: number
   height: number
   meta?: T
+  drawFns: (DrawFN<T, R> | null)[]
+  contextId: string
 }
 
-export interface CanvasProps<T> {
+export interface CanvasProps<T, R> {
   width: number
   height: number
-  onSetup?: DrawFN<T>
   loop?: boolean
-  onDraw?: DrawFN<T>
   style?: CSS.Properties
   className?: string
   meta?: T
   fps?: number
+  onSetup?: DrawFN<T, R>
+  onDraw?: DrawFN<T, R>
 }
 
 export interface Time {
@@ -31,10 +31,7 @@ export interface Time {
   timeout?: number
 }
 
-export interface DrawParams<T> {
-  onDraw?: DrawFN<T>
-  drawFns: (DrawFN<T> | null)[]
-  ctx: CanvasRenderingContext2D
+export interface BaseDrawParams<T> {
   canvas: HTMLCanvasElement
   updateTime: (time: Time) => void
   meta?: T
@@ -42,4 +39,19 @@ export interface DrawParams<T> {
   lastUpdate: number
 }
 
-export type DrawLoopFN<T> = (params: DrawParams<T>) => void
+export interface RenderingContextDrawParams<T, R> extends BaseDrawParams<T> {
+  ctx: R
+  onDraw?: DrawFN<T, R>
+  drawFns: (DrawFN<T, R> | null)[]
+  contextId: string
+}
+
+export type DrawParams<T, R> = RenderingContextDrawParams<T, R>
+
+export type DrawLoopFN<T, R> = (params: DrawParams<T, R>) => void
+
+export interface MakeCanvasReturn<R, T> {
+  useScribbleContext: () => ScribbleContext<T, R>
+  useDraw: (drawFn: DrawFN<T, R>, deps?: unknown[]) => void
+  Canvas: React.FC<CanvasProps<T, R>>
+}

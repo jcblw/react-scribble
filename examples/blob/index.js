@@ -1,6 +1,6 @@
 import React, { useRef, useState } from '../../node_modules/react'
 import ReactDOM from '../../node_modules/react-dom'
-import { Canvas, Stage } from '../../dist'
+import { Canvas, Stage, Clear, AntiAlias } from '../../dist'
 import { Blob } from './blob'
 
 const App = () => {
@@ -13,7 +13,10 @@ const App = () => {
       loop
       meta={ref}
       fps={30}
+      contextId="2d"
     >
+      <Clear />
+      <AntiAlias />
       <Blob
         x={window.innerWidth / 2 + 100}
         y={window.innerHeight / 2 + 100}
@@ -39,6 +42,7 @@ const App = () => {
           toggle color
         </button>
       </Stage>
+      <AntiAlias end />
     </Canvas>
   )
 }
