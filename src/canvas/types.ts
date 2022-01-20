@@ -54,4 +54,5 @@ export interface MakeCanvasReturn<R, T> {
   useScribbleContext: () => ScribbleContext<T, R>
   useDraw: (drawFn: DrawFN<T, R>, deps?: unknown[]) => void
   Canvas: React.FC<CanvasProps<T, R>>
+  draw: DrawLoopFN<T, R>
 }

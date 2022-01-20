@@ -6,6 +6,8 @@ import React, {
   useContext,
   useState,
   useCallback,
+  useImperativeHandle,
+  forwardRef,
 } from 'react'
 import {
   DrawFN,
@@ -42,7 +44,7 @@ export function makeCanvas<R extends RenderingContext, T>(
     contextId,
   }) => {
     let updatedLastUpdate = lastUpdate
-    const now = +new Date()
+    const now = Date.now()
     const shouldUpdate = fps >= 1000 / (now - lastUpdate)
     if (shouldUpdate) {
       updatedLastUpdate = now
@@ -76,89 +78,109 @@ export function makeCanvas<R extends RenderingContext, T>(
   }
 
   return {
-    Canvas: ({
-      width = DEFAULT_WIDTH,
-      height = DEFAULT_HEIGHT,
-      onSetup = () => {},
-      loop = false,
-      onDraw = () => {},
-      children,
-      style,
-      className,
-      meta,
-      fps = 120,
-    }) => {
-      const ref = useRef<HTMLCanvasElement>(null)
-      const drawFns = useMemo<(DrawFN<T, R> | null)[]>(() => {
-        return []
-      }, [])
-      useEffect(() => {
-        let t = 0
-        let r = 0
-        const canvas = ref.current
-        if (canvas) {
-          const ctx = canvas.getContext(contextId) as R
-          onSetup(ctx, canvas, meta)
-          if (loop) {
-            draw({
-              ctx,
-              onDraw,
-              drawFns,
-              canvas,
-              meta,
-              updateTime: ({ timeout, raf }) => {
-                if (timeout) {
-                  t = timeout
-                }
-                if (raf) {
-                  r = raf
-                }
-              },
-              fps,
-              lastUpdate: +new Date(),
-              contextId,
-            })
+    draw,
+    Canvas: forwardRef(
+      (
+        {
+          width = DEFAULT_WIDTH,
+          height = DEFAULT_HEIGHT,
+          onSetup = () => {},
+          loop = false,
+          onDraw = () => {},
+          children,
+          style,
+          className,
+          meta,
+          fps = 120,
+        },
+        forwardedRef
+      ) => {
+        const ref = useRef<HTMLCanvasElement>(null)
+        const drawFns = useMemo<(DrawFN<T, R> | null)[]>(() => {
+          return []
+        }, [])
+        useEffect(() => {
+          let t = 0
+          let r = 0
+          const canvas = ref.current
+          if (canvas) {
+            const ctx = canvas.getContext(contextId) as R
+            onSetup(ctx, canvas, meta)
+            if (loop) {
+              draw({
+                ctx,
+                onDraw,
+                drawFns,
+                canvas,
+                meta,
+                updateTime: ({ timeout, raf }) => {
+                  if (timeout) {
+                    t = timeout
+                  }
+                  if (raf) {
+                    r = raf
+                  }
+                },
+                fps,
+                lastUpdate: +new Date(),
+                contextId,
+              })
+            }
           }
-        }
-        return () => {
-          clearTimeout(t)
-          cancelAnimationFrame(r)
-        }
-      }, [height, loop, onDraw, onSetup, width, drawFns, drawFns.length, meta])
+          return () => {
+            clearTimeout(t)
+            cancelAnimationFrame(r)
+          }
+        }, [
+          height,
+          loop,
+          onDraw,
+          onSetup,
+          width,
+          drawFns,
+          drawFns.length,
+          meta,
+        ])
 
-      return (
-        <CanvasProvider
-          value={{
-            drawFns,
-            canvas: ref.current,
-            width,
-            height,
-            meta,
-            contextId,
-          }}
-        >
-          <div
-            className={className}
-            style={{
+        useImperativeHandle(forwardedRef, () => ({
+          draw,
+          canvas: ref.current,
+        }))
+
+        return (
+          <CanvasProvider
+            value={{
+              drawFns,
+              canvas: ref.current,
               width,
               height,
-              position: 'relative',
-              display: 'flex',
-              flex: 1,
-              ...style,
+              meta,
+              contextId,
             }}
           >
-            {children}
-            <canvas
-              ref={ref}
-              width={`${width}px`}
-              height={`${height}px`}
-              style={{ width, height, zIndex: 1 }}
-            />
-          </div>
-        </CanvasProvider>
-      )
-    },
+            <div
+              className={className}
+              style={{
+                width,
+                height,
+                position: 'relative',
+                display: 'flex',
+                flex: 1,
+                ...style,
+              }}
+            >
+              {children}
+              <canvas
+                ref={ref}
+                width={`${width}px`}
+                height={`${height}px`}
+                style={{ width, height, zIndex: 1 }}
+              />
+            </div>
+          </CanvasProvider>
+        )
+      }
+    ),
     useDraw: (fn: DrawFN<T, R>, dependencies = []) => {
       const { drawFns } = useContext(context)
       const [index, setIndex] = useState<number>()
