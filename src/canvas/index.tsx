@@ -159,7 +159,7 @@ export function makeCanvas<R extends RenderingContext, T>(
           draw: contextualizedDraw,
           canvas: ref.current,
         }),
-        []
+        [contextualizedDraw]
       )
 
       return (
