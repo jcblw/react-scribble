@@ -24,6 +24,7 @@ export interface CanvasProps<T, R> {
   fps?: number
   onSetup?: DrawFN<T, R>
   onDraw?: DrawFN<T, R>
+  children?: React.ReactNode
 }
 
 export interface Time {
@@ -44,6 +45,7 @@ export interface RenderingContextDrawParams<T, R> extends BaseDrawParams<T> {
   onDraw?: DrawFN<T, R>
   drawFns: (DrawFN<T, R> | null)[]
   contextId: string
+  loop?: boolean
 }
 
 export type DrawParams<T, R> = RenderingContextDrawParams<T, R>
@@ -53,6 +55,14 @@ export type DrawLoopFN<T, R> = (params: DrawParams<T, R>) => void
 export interface MakeCanvasReturn<R, T> {
   useScribbleContext: () => ScribbleContext<T, R>
   useDraw: (drawFn: DrawFN<T, R>, deps?: unknown[]) => void
-  Canvas: React.FC<CanvasProps<T, R>>
+  Canvas: React.ForwardRefExoticComponent<
+    CanvasProps<T, R> &
+      React.RefAttributes<CanvasRef<R, T>> & { children?: React.ReactNode }
+  >
   draw: DrawLoopFN<T, R>
+}
+
+export interface CanvasRef<R, T> {
+  canvas?: HTMLCanvasElement
+  draw: (fn?: BaseDrawParams<T>['updateTime'], loop?: boolean) => void
 }
