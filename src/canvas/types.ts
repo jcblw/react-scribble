@@ -64,5 +64,10 @@ export interface MakeCanvasReturn<R, T> {
 
 export interface CanvasRef<R, T> {
   canvas?: HTMLCanvasElement
-  draw: (fn?: BaseDrawParams<T>['updateTime'], loop?: boolean) => void
+  draw: (
+    params?: Pick<
+      Partial<BaseDrawParams<T>>,
+      'updateTime' | 'fps' | 'lastUpdate'
+    > & { loop?: boolean }
+  ) => void
 }

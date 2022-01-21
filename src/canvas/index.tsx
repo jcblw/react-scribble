@@ -105,7 +105,18 @@ export function makeCanvas<R extends RenderingContext, T>(
       }, [])
 
       const contextualizedDraw = useCallback(
-        (updateTime?: BaseDrawParams<T>['updateTime'], loop?: boolean) => {
+        (
+          params: Pick<
+            Partial<BaseDrawParams<T>>,
+            'updateTime' | 'fps' | 'lastUpdate'
+          > & { loop?: boolean } = {}
+        ) => {
+          const {
+            loop = false,
+            updateTime,
+            lastUpdate,
+            fps = 1000, // allows for render on demand
+          } = params
           const canvas = ref.current
           if (canvas) {
             const ctx = canvas.getContext(contextId) as R
@@ -117,7 +128,7 @@ export function makeCanvas<R extends RenderingContext, T>(
               meta,
               updateTime,
               fps,
-              lastUpdate: Date.now(),
+              lastUpdate: lastUpdate ?? Date.now() - 1,
               contextId,
               loop,
             })
@@ -134,13 +145,17 @@ export function makeCanvas<R extends RenderingContext, T>(
           const ctx = canvas.getContext(contextId) as R
           onSetup(ctx, canvas, meta)
           if (loop) {
-            contextualizedDraw(({ timeout, raf }) => {
-              if (timeout) {
-                t = timeout
-              }
-              if (raf) {
-                r = raf
-              }
+            contextualizedDraw({
+              updateTime: ({ timeout, raf }) => {
+                if (timeout) {
+                  t = timeout
+                }
+                if (raf) {
+                  r = raf
+                }
+              },
+              loop: true,
+              fps,
             })
           }
         }
